@@ -10,23 +10,18 @@ services:
       - .env
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
-      - PYTHONPATH=/src
+      - PYTHONPATH=/app
     volumes:
-      - ./backend:/src  # Для hot-reload
+      - ./backend:/app
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - game-network
-#  frontend:
-#    build: ./frontend
-#    container_name: cockroach-frontend
-#    ports:
-#      - "3000:80"
-#    networks:
-#      - game-network
 
   db:
     image: postgres:15
@@ -39,6 +34,11 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - game-network
 
@@ -49,6 +49,11 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - game-network
 
@@ -59,8 +64,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./certs:/etc/ssl/certs
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/ssl/certs:ro
     depends_on:
       - backend
     networks:

@@ -3,11 +3,9 @@ from telegram import Bot
 from telegram.error import TelegramError
 from src.database import settings
 
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN") or settings.telegram_token
-
 async def send_telegram_message(chat_id: str, message: str):
     try:
-        bot = Bot(token=TELEGRAM_TOKEN)
+        bot = Bot(token=settings.telegram_token)
         await bot.send_message(chat_id=chat_id, text=message)
         return True
     except TelegramError as e:
