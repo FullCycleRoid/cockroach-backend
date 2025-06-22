@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, JSON, DateTime
 from sqlalchemy.orm import relationship
-from src.database import Base
+from database import Base
 
 class Player(Base):
     __tablename__ = "players"
@@ -31,7 +31,7 @@ class GamePlayer(Base):
     game_id = Column(String, ForeignKey("games.id"))
     player_id = Column(String, ForeignKey("players.telegram_id"))
     is_creator = Column(Boolean, default=False)
-    player_number = Column(Integer, nullable=True)  # 1 or 2
+    player_number = Column(Integer, nullable=True)
     game = relationship("Game", back_populates="players")
     player = relationship("Player", back_populates="games")
 

@@ -1,9 +1,10 @@
 import asyncio
-import json
 import redis.asyncio as redis
 from collections import defaultdict
 from starlette.websockets import WebSocket
+
 from src.schemas import WebSocketMessage
+
 
 class WebSocketManager:
     def __init__(self):

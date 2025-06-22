@@ -1,5 +1,6 @@
 from src.schemas import GameState
 
+
 def initialize_game_state():
     return GameState(
         cells={},
