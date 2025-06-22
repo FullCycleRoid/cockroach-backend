@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy.orm import Session
-from app import models, schemas
+from src import models, schemas
 
 
 def create_player(db: Session, player: schemas.PlayerCreate):
@@ -28,7 +28,7 @@ def create_game(db: Session, game: schemas.GameCreate, creator_id: str):
     game_id = str(uuid.uuid4())
 
     # Инициализация состояния игры
-    from backend.src.services.game_service import initialize_game_state
+    from src.services.game_service import initialize_game_state
     game_state = initialize_game_state()
 
     db_game = models.Game(

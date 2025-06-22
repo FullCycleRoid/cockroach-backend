@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app import crud, schemas
+from src.database import get_db
+from src import crud, schemas
 
 router = APIRouter()
 
@@ -47,7 +47,7 @@ def make_move_in_game(
     game_state = schemas.GameState(**db_game.state)
 
     # Выполняем ход
-    from app.services.game_service import make_move
+    from src.services.game_service import make_move
     try:
         updated_state = make_move(game_state, move.player_id, move.x, move.y)
     except ValueError as e:
@@ -57,7 +57,7 @@ def make_move_in_game(
     updated_game = crud.update_game_state(db, game_id, updated_state)
 
     # Отправляем обновление через WebSocket
-    from app.websockets.manager import ws_manager
+    from src.websockets.manager import ws_manager
     ws_manager.broadcast_game_update(game_id, updated_game)
 
     return updated_game

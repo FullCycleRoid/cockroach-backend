@@ -3,6 +3,8 @@ import json
 import redis.asyncio as redis
 from collections import defaultdict
 
+from starlette.websockets import WebSocket
+
 
 class WebSocketManager:
     def __init__(self):
@@ -11,7 +13,7 @@ class WebSocketManager:
         self.pubsub = None
 
     async def connect_redis(self):
-        from app.database import settings
+        from src.database import settings
         self.redis = redis.Redis.from_url(settings.redis_url)
         self.pubsub = self.redis.pubsub()
         asyncio.create_task(self.listen_redis())

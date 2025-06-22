@@ -1,4 +1,4 @@
-from backend.src.schemas import GameState
+from src.schemas import GameState
 
 
 def initialize_game_state():

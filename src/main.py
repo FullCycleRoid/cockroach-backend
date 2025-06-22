@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, SessionLocal
-from app import models
-from app.endpoints import game, player, invite, websocket
-from app.websockets.manager import ws_manager
+from src.database import engine, SessionLocal
+from src import models
+from src.endpoints import game, player, websocket  # invite
+from src.websockets.manager import ws_manager
 
 models.Base.metadata.create_all(bind=engine)
 

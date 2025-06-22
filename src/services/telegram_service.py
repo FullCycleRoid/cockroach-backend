@@ -1,7 +1,7 @@
 import os
 from telegram import Bot
 from telegram.error import TelegramError
-from backend.src.database import settings
+from src.database import settings
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN") or settings.telegram_token
 
