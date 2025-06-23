@@ -19,7 +19,7 @@ class Player(PlayerBase):
 class GameState(BaseModel):
     cells: Dict[str, Dict[str, Any]] = {}
     current_player: int = 1
-    remaining_moves: int = 1
+    remaining_moves: int = 10
     activated_walls: List[str] = []
     is_game_over: bool = False
     winner: Optional[int] = None

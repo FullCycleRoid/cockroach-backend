@@ -13,7 +13,7 @@ class WebSocketManager:
         self.pubsub = None
 
     async def connect_redis(self):
-        from src.database import settings
+        from src.config import settings
         try:
             self.redis = redis.Redis.from_url(
                 settings.redis_url,
