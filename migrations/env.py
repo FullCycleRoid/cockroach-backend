@@ -3,10 +3,9 @@ from logging.config import fileConfig
 from pathlib import Path
 from typing import Dict
 
+from alembic import context
 from dotenv import dotenv_values
 from sqlalchemy import engine_from_config, pool
-
-from alembic import context
 
 from src.database import Base
 
@@ -27,12 +26,16 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 if os.getenv('POSTGRES_USER'):
-    alembic_db_uri = f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
+    alembic_db_uri = (f"postgresql://{os.getenv('POSTGRES_USER')}:"
+                      f"{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}:"
+                      f"{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}")
 
 else:
     DOTENV: Path = Path(f'{os.getcwd()}/.env')
     ENVS: Dict[str, str] = dotenv_values(DOTENV)
-    alembic_db_uri = f"postgresql://{ENVS['POSTGRES_USER']}:{ENVS['POSTGRES_PASSWORD']}@{ENVS['ALEMBIC_POSTGRES_HOST']}:{ENVS['ALEMBIC_POSTGRES_PORT']}/{ENVS['POSTGRES_DB']}"
+    alembic_db_uri = (f"postgresql://{ENVS['POSTGRES_USER']}:"
+                      f"{ENVS['POSTGRES_PASSWORD']}@{ENVS['ALEMBIC_POSTGRES_HOST']}:"
+                      f"{ENVS['ALEMBIC_POSTGRES_PORT']}/{ENVS['POSTGRES_DB']}")
 
 config.set_main_option("sqlalchemy.url", alembic_db_uri)
 config.compare_type = True

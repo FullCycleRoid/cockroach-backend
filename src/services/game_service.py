@@ -13,6 +13,7 @@ def initialize_game_state():
         placed_roaches={1: 0, 2: 0}
     )
 
+
 def is_valid_placement(game_state, player_number, x, y):
     # Game rules implementation
     # 1. Placement must be within board boundaries
@@ -51,6 +52,7 @@ def is_valid_placement(game_state, player_number, x, y):
                     return True
 
         return False
+
 
 def make_move(game_state, player_id, game_players, x, y):
     # Get player number by player_id

@@ -13,6 +13,7 @@ async def send_telegram_message(chat_id: str, message: str):
         print(f"Telegram error: {e}")
         return False
 
+
 async def send_invite_notification(player_id: str, game_id: str, creator_username: str):
     message = (
         f"🎮 Вы приглашены в игру 'Тараканы'!\n"

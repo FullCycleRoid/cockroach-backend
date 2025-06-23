@@ -1,6 +1,8 @@
-from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel
+
 
 class PlayerBase(BaseModel):
     telegram_id: str
@@ -8,13 +10,16 @@ class PlayerBase(BaseModel):
     first_name: str
     last_name: Optional[str] = None
 
+
 class PlayerCreate(PlayerBase):
     pass
+
 
 class Player(PlayerBase):
     created_at: datetime
     class Config:
         from_attributes = True
+
 
 class GameState(BaseModel):
     cells: Dict[str, Dict[str, Any]] = {}
@@ -26,6 +31,7 @@ class GameState(BaseModel):
     phase: str = "placement"
     placed_roaches: Dict[int, int] = {1: 0, 2: 0}
 
+
 class GameBase(BaseModel):
     id: str
     state: GameState
@@ -35,14 +41,17 @@ class GameBase(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 class GameCreate(BaseModel):
     creator_id: str
+
 
 class GamePlayerCreate(BaseModel):
     game_id: str
     player_id: str
     is_creator: bool = False
     player_number: Optional[int] = None
+
 
 class GamePlayerResponse(BaseModel):
     game_id: str
@@ -54,23 +63,28 @@ class GamePlayerResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
 class GameResponse(GameBase):
     players: List[GamePlayerResponse] = []
 
     class Config:
         from_attributes = True
 
+
 class MoveRequest(BaseModel):
     player_id: str
     x: int
     y: int
 
+
 class InviteBase(BaseModel):
     game_id: str
     player_id: str
 
+
 class InviteCreate(InviteBase):
     pass
+
 
 class InviteResponse(InviteBase):
     id: str
@@ -81,6 +95,7 @@ class InviteResponse(InviteBase):
 
     class Config:
         from_attributes = True
+
 
 class WebSocketMessage(BaseModel):
     type: str

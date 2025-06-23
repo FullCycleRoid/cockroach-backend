@@ -4,6 +4,7 @@ from src.websockets.manager import ws_manager
 
 router = APIRouter()
 
+
 @router.websocket("/game/{game_id}")
 async def websocket_game_endpoint(
         websocket: WebSocket,

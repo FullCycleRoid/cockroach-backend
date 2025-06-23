@@ -1,6 +1,7 @@
 import asyncio
-import redis.asyncio as redis
 from collections import defaultdict
+
+import redis.asyncio as redis
 from starlette.websockets import WebSocket
 
 from src.schemas import WebSocketMessage
@@ -100,5 +101,6 @@ class WebSocketManager:
         except Exception as e:
             print(f"Broadcast error: {e}")
             return False
+
 
 ws_manager = WebSocketManager()

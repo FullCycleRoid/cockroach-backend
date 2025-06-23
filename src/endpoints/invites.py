@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from src import schemas, crud
+from src import crud, schemas
 from src.database import get_db
 from src.services import telegram_service
 

@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 # from database import engine, Base, get_db
 # from sqlalchemy.orm import Session
 # from endpoints import game, player, websocket
