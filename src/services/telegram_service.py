@@ -1,7 +1,7 @@
 from telegram import Bot
 from telegram.error import TelegramError
 
-from src.database import settings
+from src.config import settings
 
 
 async def send_telegram_message(chat_id: str, message: str):
