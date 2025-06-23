@@ -1,4 +1,6 @@
-from pydantic_settings import BaseSettings
+import os
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -9,5 +11,9 @@ class Settings(BaseSettings):
     POSTGRES_PORT: str = "5432"
     REDIS_URL: str = "redis://redis:6379"
     TELEGRAM_TOKEN: str = ""
+
+    model_config = SettingsConfigDict(
+        env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
+    )
 
 settings = Settings()
