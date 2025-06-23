@@ -1,35 +1,35 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: cockroach-backend
-    env_file:
-      - .env
-    environment:
-      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
-      - PYTHONPATH=/app
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      - REDIS_URL=redis://redis:6379/0
-    volumes:
-      - ./src:/app
-    ports:
-      - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
+#  backend:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: cockroach-backend
+#    env_file:
+#      - .env
+#    environment:
+#      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+#      - PYTHONPATH=/app
+#      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+#      - REDIS_URL=redis://redis:6379/0
+#    volumes:
+#      - ./src:/app
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      db:
+#        condition: service_healthy
 #      redis:
 #        condition: service_healthy
-    networks:
-      - game-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+#    networks:
+#      - game-network
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+#      start_period: 30s
 
 #  nginx:
 #    image: nginx:alpine
@@ -45,7 +45,7 @@ services:
 #      - game-network
 
   db:
-    image: postgres:15  # Updated from 9.6 to 15
+    image: postgres:15
     container_name: cockroach-db
     env_file:
       - .env
@@ -63,25 +63,25 @@ services:
       timeout: 5s
       retries: 10
 
-#  redis:
-#    image: redis:7-alpine
-#    container_name: cockroach-redis
-#    command: redis-server --requirepass ${REDIS_PASSWORD}  # Add if using password
-#    env_file:
-#      - .env
-#    environment:
-#      - REDIS_PASSWORD=${REDIS_PASSWORD}  # Add if using password
-#    ports:
-#      - "6379:6379"
-#    volumes:
-#      - redis-data:/data
-#    networks:
-#      - game-network
-#    healthcheck:
-#      test: ["CMD", "redis-cli", "ping"]
-#      interval: 5s
-#      timeout: 5s
-#      retries: 10
+  redis:
+    image: redis:7-alpine
+    container_name: cockroach-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD}  # Add if using password
+    env_file:
+      - .env
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}  # Add if using password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - game-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   postgres-data:
