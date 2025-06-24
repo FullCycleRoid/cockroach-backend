@@ -31,14 +31,13 @@ class Environment(Enum):
 class Settings(BaseSettings):
     ENVIRONMENT: Environment
 
-    POSTGRES_USER: str = "gameuser"
-    POSTGRES_PASSWORD: str = "gamepass"
-    POSTGRES_DB: str = "cockroachdb"
-    POSTGRES_HOST: str = "localhost"
-    POSTGRES_PORT: str = "5432"
-    REDIS_URL: str = "redis://redis:6379"
-    TELEGRAM_TOKEN: str = ""
-    DEBUG_MODE: str = ""
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_DB: str
+    POSTGRES_HOST: str
+    POSTGRES_PORT: str
+    REDIS_URL: str
+    TELEGRAM_TOKEN: str
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")

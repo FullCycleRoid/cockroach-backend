@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src import crud, schemas
 from src.database import get_db
 from src.services import game_service
-from src.websockets.manager import ws_manager
+from src.sockets.manager import ws_manager
 
 router = APIRouter()
 

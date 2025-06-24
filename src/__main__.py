@@ -8,7 +8,7 @@ from database import engine, Base, get_db
 from sqlalchemy.orm import Session
 from endpoints import game, player, websocket
 from src.config import settings
-from websockets.manager import ws_manager
+from sockets.manager import ws_manager
 
 Base.metadata.create_all(bind=engine)
 
@@ -41,10 +41,17 @@ app.add_middleware(
 )
 
 
-# app.include_router(game.router, prefix="/api/games", tags=["games"])
-# app.include_router(player.router, prefix="/api/players", tags=["players"])
-# app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
+app.include_router(game.router, prefix="/api/games", tags=["games"])
+app.include_router(player.router, prefix="/api/players", tags=["players"])
+app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
 
+from fastapi.websockets import WebSocket
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"You said: {data}")
 
 @app.get("/health")
 async def health_check(db: Session = Depends(get_db)):
@@ -69,12 +76,12 @@ async def health_check(db: Session = Depends(get_db)):
         "database": "ok" if db_ok else "unavailable",
         "redis": "ok" if redis_ok else "unavailable"
     }
-
+#
 
 if __name__ == "__main__":
     if settings.ENVIRONMENT == settings.ENVIRONMENT.LOCAL:
         uvicorn.run(
-            "main:app",
+            "__main__:app",
             host="0.0.0.0",
             port=8000,
             reload=True,

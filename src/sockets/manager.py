@@ -2,7 +2,7 @@ import asyncio
 from collections import defaultdict
 
 import redis.asyncio as redis
-from starlette.websockets import WebSocket
+from fastapi import WebSocket
 
 from src.schemas import WebSocketMessage
 
@@ -17,7 +17,7 @@ class WebSocketManager:
         from src.config import settings
         try:
             self.redis = redis.Redis.from_url(
-                settings.redis_url,
+                settings.REDIS_URL,
                 decode_responses=True,
                 socket_connect_timeout=5,
                 socket_keepalive=True

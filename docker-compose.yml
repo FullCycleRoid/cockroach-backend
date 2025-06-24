@@ -50,6 +50,8 @@ services:
     env_file: .env
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "25432:5432"
     networks:
       - game-network
 
