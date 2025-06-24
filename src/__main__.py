@@ -76,12 +76,12 @@ async def health_check(db: Session = Depends(get_db)):
         "database": "ok" if db_ok else "unavailable",
         "redis": "ok" if redis_ok else "unavailable"
     }
-#
+
 
 if __name__ == "__main__":
-    if settings.ENVIRONMENT == settings.ENVIRONMENT.LOCAL:
+    if settings.ENVIRONMENT.is_local:
         uvicorn.run(
-            "__main__:app",
+            "src.__main__:app",
             host="0.0.0.0",
             port=8000,
             reload=True,

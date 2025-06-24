@@ -11,7 +11,7 @@ class Environment(Enum):
 
     @property
     def is_local(self) -> bool:
-        if self == "LOCAL":
+        if self == Environment.LOCAL:
             return True
         return False
 
