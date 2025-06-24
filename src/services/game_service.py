@@ -15,109 +15,84 @@ def initialize_game_state():
 
 
 def is_valid_placement(game_state, player_number, x, y):
-    # Game rules implementation
-    # 1. Placement must be within board boundaries
+    # Проверка границ
     if x < 0 or x >= 25 or y < 0 or y >= 30:
         return False
 
-    # 2. Cell must be empty
     key = f"{x},{y}"
     if key in game_state.cells:
         return False
 
-    # 3. Must be adjacent to own cockroach or wall
+    # Для первого размещения - базовая зона
     if game_state.placed_roaches[player_number] == 0:
-        # First placement - must be in base area
         center = 12
         if player_number == 1:
             return y < 8 and abs(x - center) <= 2
         else:
             return y > 21 and abs(x - center) <= 2
-    else:
-        # Subsequent placements
-        adjacent_positions = [
-            (x+1, y), (x-1, y), (x, y+1), (x, y-1),
-            (x+1, y+1), (x-1, y-1), (x+1, y-1), (x-1, y+1)
-        ]
 
-        for ax, ay in adjacent_positions:
+    # Для последующих - смежные позиции
+    adjacent = [(x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if dx != 0 or dy != 0]
+
+    for ax, ay in adjacent:
+        if 0 <= ax < 25 and 0 <= ay < 30:
             akey = f"{ax},{ay}"
-            if akey in game_state.cells:
-                cell = game_state.cells[akey]
-                if cell["player"] == player_number:
+            cell = game_state.cells.get(akey)
+            if cell:
+                if cell.get("player") == player_number or cell.get("type") == "wall":
                     return True
-
-                # Check if touching wall
-                if cell["type"] == "wall":
-                    return True
-
-        return False
+    return False
 
 
 def make_move(game_state, player_id, game_players, x, y):
-    # Get player number by player_id
+    # Находим игрока и его номер
     player = next((p for p in game_players if p.player_id == player_id), None)
-    if not player or player.player_number != game_state.current_player:
-        raise ValueError("Not player's turn")
+    if not player:
+        raise ValueError("Player not found in game")
 
     player_number = player.player_number
+
+    # Проверка очереди хода
+    if player_number != game_state.current_player:
+        raise ValueError("Not player's turn")
+
     key = f"{x},{y}"
 
     if game_state.phase == "placement":
-        # Validate placement
         if not is_valid_placement(game_state, player_number, x, y):
             raise ValueError("Invalid placement position")
 
-        # Place cockroach
-        game_state.cells[key] = {
-            "type": "x",
-            "player": player_number
-        }
-
-        # Update counters
+        game_state.cells[key] = {"type": "roach", "player": player_number}
         game_state.placed_roaches[player_number] += 1
 
-        # Check if both players have placed all cockroaches
-        if (game_state.placed_roaches[1] >= 10 and
-                game_state.placed_roaches[2] >= 10):
+        # Проверка завершения фазы размещения
+        if all(count >= 10 for count in game_state.placed_roaches.values()):
             game_state.phase = "activation"
             game_state.remaining_moves = 3
         else:
-            # Switch player
             game_state.current_player = 3 - player_number
             game_state.remaining_moves = 1
 
     elif game_state.phase == "activation":
-        # Validate activation
         if key in game_state.cells:
             raise ValueError("Cell already occupied")
 
-        # Place wall
-        game_state.cells[key] = {
-            "type": "wall",
-            "player": player_number
-        }
-
+        game_state.cells[key] = {"type": "wall", "player": player_number}
         game_state.remaining_moves -= 1
 
         if game_state.remaining_moves <= 0:
             game_state.current_player = 3 - player_number
             game_state.remaining_moves = 3
 
-    # Check for game over condition
+    # Проверка условий победы
     center = 12
-    king1_key = f"{center},3"
-    king2_key = f"{center},{30-4}"
+    king_positions = {1: f"{center},3", 2: f"{center},26"}
 
-    # Check if king is captured
-    if (king1_key in game_state.cells and
-            game_state.cells[king1_key]["player"] == 2):
-        game_state.is_game_over = True
-        game_state.winner = 2
-
-    elif (king2_key in game_state.cells and
-          game_state.cells[king2_key]["player"] == 1):
-        game_state.is_game_over = True
-        game_state.winner = 1
+    for pnum, pos in king_positions.items():
+        cell = game_state.cells.get(pos)
+        if cell and cell.get("player") != pnum:
+            game_state.is_game_over = True
+            game_state.winner = 3 - pnum
+            break
 
     return game_state

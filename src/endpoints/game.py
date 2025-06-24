@@ -1,8 +1,6 @@
 import asyncio
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from src import crud, schemas
 from src.database import get_db
 from src.services import game_service
@@ -17,7 +15,7 @@ def create_game(game: schemas.GameCreate, db: Session = Depends(get_db)):
     if not player:
         raise HTTPException(status_code=404, detail="Player not found")
 
-    db_game = crud.create_game(db, game, game.creator_id)
+    db_game = crud.create_game(db, game.creator_id)
     return db_game
 
 
@@ -35,24 +33,19 @@ def make_move_in_game(
         move: schemas.MoveRequest,
         db: Session = Depends(get_db)
 ):
-    # Get game
     db_game = crud.get_game(db, game_id)
     if not db_game:
         raise HTTPException(status_code=404, detail="Game not found")
 
-    # Check if player is in the game
-    player_in_game = any(
-        player.player_id == move.player_id
-        for player in db_game.players
-    )
+    # Проверка участия игрока
+    player_in_game = any(p.player_id == move.player_id for p in db_game.players)
     if not player_in_game:
         raise HTTPException(status_code=403, detail="Player not in game")
 
-    # Get current state
     game_state = schemas.GameState(**db_game.state)
 
-    # Execute move
     try:
+        # Обновляем состояние игры
         updated_state = game_service.make_move(
             game_state,
             move.player_id,
@@ -63,10 +56,10 @@ def make_move_in_game(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    # Update state in DB
+    # Сохраняем обновленное состояние
     updated_game = crud.update_game_state(db, game_id, updated_state)
 
-    # Broadcast update via WebSocket
+    # Рассылаем обновление через WebSocket
     if updated_game:
         asyncio.create_task(ws_manager.broadcast_game_update(game_id, updated_game))
 
