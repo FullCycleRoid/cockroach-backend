@@ -1,14 +1,7 @@
-
-
-#FROM python:3.9
+FROM python:3.9
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apk update && apk add --no-cache \
-    build-base \
-    postgresql-dev \
-    curl
 
 # Copy requirements first for better caching
 COPY requirements.txt .
@@ -18,7 +11,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY src src/
+COPY src /app/src
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \

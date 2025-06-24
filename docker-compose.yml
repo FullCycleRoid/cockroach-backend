@@ -9,7 +9,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./src:/app
+      - ./src:/app/src  # Fixed volume mount
     ports:
       - "8000:8000"
     depends_on:
@@ -18,7 +18,7 @@ services:
     networks:
       - game-network
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -60,11 +60,6 @@ services:
       - redis-data:/data
     networks:
       - game-network
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
 
 volumes:
   postgres-data:
