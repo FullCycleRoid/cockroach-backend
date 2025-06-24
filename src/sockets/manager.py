@@ -15,12 +15,13 @@ class WebSocketManager:
 
     async def connect_redis(self):
         from src.config import settings
+
         try:
             self.redis = redis.Redis.from_url(
                 settings.REDIS_URL,
                 decode_responses=True,
                 socket_connect_timeout=5,
-                socket_keepalive=True
+                socket_keepalive=True,
             )
             await self.redis.ping()
             self.pubsub = self.redis.pubsub()
@@ -70,8 +71,7 @@ class WebSocketManager:
     def disconnect(self, websocket: WebSocket, game_id: str):
         if game_id in self.active_connections:
             self.active_connections[game_id] = [
-                conn for conn in self.active_connections[game_id]
-                if conn != websocket
+                conn for conn in self.active_connections[game_id] if conn != websocket
             ]
             print(f"🔌 WebSocket disconnected for game {game_id}")
 
@@ -80,10 +80,7 @@ class WebSocketManager:
             return False
 
         try:
-            message = WebSocketMessage(
-                type="game_update",
-                game=game
-            )
+            message = WebSocketMessage(type="game_update", game=game)
             message_json = message.json()
 
             # Publish to Redis for all instances

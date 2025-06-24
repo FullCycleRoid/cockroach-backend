@@ -1,7 +1,9 @@
-from datetime import datetime
-from sqlalchemy.orm import Session
-from src import models, schemas
 import uuid
+from datetime import datetime
+
+from sqlalchemy.orm import Session
+
+from src import models, schemas
 
 
 def create_player(db: Session, player: schemas.PlayerCreate):
@@ -9,7 +11,7 @@ def create_player(db: Session, player: schemas.PlayerCreate):
         telegram_id=player.telegram_id,
         username=player.username,
         first_name=player.first_name,
-        last_name=player.last_name
+        last_name=player.last_name,
     )
     db.add(db_player)
     db.commit()
@@ -18,27 +20,23 @@ def create_player(db: Session, player: schemas.PlayerCreate):
 
 
 def get_player(db: Session, telegram_id: str):
-    return db.query(models.Player).filter(models.Player.telegram_id == telegram_id).first()
+    return (
+        db.query(models.Player).filter(models.Player.telegram_id == telegram_id).first()
+    )
 
 
 def create_game(db: Session, creator_id: str):
     game_id = str(uuid.uuid4())
     from src.services.game_service import initialize_game_state
+
     game_state = initialize_game_state()
 
-    db_game = models.Game(
-        id=game_id,
-        state=game_state.dict(),
-        status="waiting"
-    )
+    db_game = models.Game(id=game_id, state=game_state.dict(), status="waiting")
     db.add(db_game)
 
     # Добавляем создателя с номером 1
     db_game_player = models.GamePlayer(
-        game_id=game_id,
-        player_id=creator_id,
-        is_creator=True,
-        player_number=1
+        game_id=game_id, player_id=creator_id, is_creator=True, player_number=1
     )
     db.add(db_game_player)
     db.commit()
@@ -61,10 +59,7 @@ def add_player_to_game(db: Session, game_id: str, player_id: str):
 
     # Назначаем номер 2 новому игроку
     db_game_player = models.GamePlayer(
-        game_id=game_id,
-        player_id=player_id,
-        is_creator=False,
-        player_number=2
+        game_id=game_id, player_id=player_id, is_creator=False, player_number=2
     )
     db.add(db_game_player)
 
@@ -82,7 +77,7 @@ def create_invite(db: Session, invite: schemas.InviteCreate):
         id=invite_id,
         game_id=invite.game_id,
         player_id=invite.player_id,
-        status="pending"
+        status="pending",
     )
     db.add(db_invite)
     db.commit()
@@ -115,8 +110,7 @@ def update_game_state(db: Session, game_id: str, game_state: schemas.GameState):
             # Находим telegram_id победителя по номеру
             winner_number = game_state.winner
             winner_player = next(
-                (p for p in game.players if p.player_number == winner_number),
-                None
+                (p for p in game.players if p.player_number == winner_number), None
             )
             if winner_player:
                 game.winner_id = winner_player.player_id

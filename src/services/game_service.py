@@ -10,7 +10,7 @@ def initialize_game_state():
         is_game_over=False,
         winner=None,
         phase="placement",
-        placed_roaches={1: 0, 2: 0}
+        placed_roaches={1: 0, 2: 0},
     )
 
 
@@ -32,7 +32,9 @@ def is_valid_placement(game_state, player_number, x, y):
             return y > 21 and abs(x - center) <= 2
 
     # Для последующих - смежные позиции
-    adjacent = [(x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if dx != 0 or dy != 0]
+    adjacent = [
+        (x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if dx != 0 or dy != 0
+    ]
 
     for ax, ay in adjacent:
         if 0 <= ax < 25 and 0 <= ay < 30:

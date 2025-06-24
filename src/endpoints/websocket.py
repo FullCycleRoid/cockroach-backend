@@ -6,10 +6,7 @@ router = APIRouter()
 
 
 @router.websocket("/game/{game_id}")
-async def websocket_game_endpoint(
-        websocket: WebSocket,
-        game_id: str
-):
+async def websocket_game_endpoint(websocket: WebSocket, game_id: str):
     await ws_manager.connect(websocket, game_id)
     try:
         while True:

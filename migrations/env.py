@@ -25,17 +25,21 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-if os.getenv('POSTGRES_USER'):
-    alembic_db_uri = (f"postgresql://{os.getenv('POSTGRES_USER')}:"
-                      f"{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}:"
-                      f"{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}")
+if os.getenv("POSTGRES_USER"):
+    alembic_db_uri = (
+        f"postgresql://{os.getenv('POSTGRES_USER')}:"
+        f"{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}:"
+        f"{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
+    )
 
 else:
-    DOTENV: Path = Path(f'{os.getcwd()}/.env')
+    DOTENV: Path = Path(f"{os.getcwd()}/.env")
     ENVS: Dict[str, str] = dotenv_values(DOTENV)
-    alembic_db_uri = (f"postgresql://{ENVS['POSTGRES_USER']}:"
-                      f"{ENVS['POSTGRES_PASSWORD']}@{ENVS['ALEMBIC_POSTGRES_HOST']}:"
-                      f"{ENVS['ALEMBIC_POSTGRES_PORT']}/{ENVS['POSTGRES_DB']}")
+    alembic_db_uri = (
+        f"postgresql://{ENVS['POSTGRES_USER']}:"
+        f"{ENVS['POSTGRES_PASSWORD']}@{ENVS['ALEMBIC_POSTGRES_HOST']}:"
+        f"{ENVS['ALEMBIC_POSTGRES_PORT']}/{ENVS['POSTGRES_DB']}"
+    )
 
 config.set_main_option("sqlalchemy.url", alembic_db_uri)
 config.compare_type = True
@@ -61,7 +65,7 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
-        compare_server_default=True
+        compare_server_default=True,
     )
 
     with context.begin_transaction():
@@ -86,7 +90,7 @@ def run_migrations_online() -> None:
             connection=connection,
             target_metadata=target_metadata,
             compare_type=True,
-            compare_server_default=True
+            compare_server_default=True,
         )
 
         with context.begin_transaction():

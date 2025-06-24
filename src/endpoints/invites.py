@@ -24,16 +24,11 @@ def create_invite(invite: schemas.InviteCreate, db: Session = Depends(get_db)):
     db_invite = crud.create_invite(db, invite)
 
     # Отправляем уведомление через Telegram
-    creator = next(
-        (gp.player for gp in game.players if gp.is_creator),
-        None
-    )
+    creator = next((gp.player for gp in game.players if gp.is_creator), None)
 
     if creator:
         telegram_service.send_invite_notification(
-            player.telegram_id,
-            game.id,
-            creator.username
+            player.telegram_id, game.id, creator.username
         )
 
     return db_invite
@@ -43,6 +38,8 @@ def create_invite(invite: schemas.InviteCreate, db: Session = Depends(get_db)):
 def accept_invite(invite_id: str, player_id: str, db: Session = Depends(get_db)):
     db_invite = crud.accept_invite(db, invite_id, player_id)
     if not db_invite:
-        raise HTTPException(status_code=404, detail="Invite not found or already accepted")
+        raise HTTPException(
+            status_code=404, detail="Invite not found or already accepted"
+        )
 
     return crud.get_game(db, db_invite.game_id)

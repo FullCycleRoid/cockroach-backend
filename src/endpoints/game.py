@@ -1,6 +1,8 @@
 import asyncio
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 from src import crud, schemas
 from src.database import get_db
 from src.services import game_service
@@ -29,9 +31,7 @@ def read_game(game_id: str, db: Session = Depends(get_db)):
 
 @router.post("/{game_id}/move", response_model=schemas.GameResponse)
 def make_move_in_game(
-        game_id: str,
-        move: schemas.MoveRequest,
-        db: Session = Depends(get_db)
+    game_id: str, move: schemas.MoveRequest, db: Session = Depends(get_db)
 ):
     db_game = crud.get_game(db, game_id)
     if not db_game:
@@ -47,11 +47,7 @@ def make_move_in_game(
     try:
         # Обновляем состояние игры
         updated_state = game_service.make_move(
-            game_state,
-            move.player_id,
-            db_game.players,
-            move.x,
-            move.y
+            game_state, move.player_id, db_game.players, move.x, move.y
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -3,12 +3,12 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from database import engine, Base, get_db
 from sqlalchemy.orm import Session
+
+from database import Base, engine, get_db
 from endpoints import game, player, websocket
-from src.config import settings
 from sockets.manager import ws_manager
+from src.config import settings
 
 Base.metadata.create_all(bind=engine)
 
@@ -46,12 +46,15 @@ app.include_router(player.router, prefix="/api/players", tags=["players"])
 app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
 
 from fastapi.websockets import WebSocket
+
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     while True:
         data = await websocket.receive_text()
         await websocket.send_text(f"You said: {data}")
+
 
 @app.get("/health")
 async def health_check(db: Session = Depends(get_db)):
@@ -74,16 +77,12 @@ async def health_check(db: Session = Depends(get_db)):
     return {
         "status": status,
         "database": "ok" if db_ok else "unavailable",
-        "redis": "ok" if redis_ok else "unavailable"
+        "redis": "ok" if redis_ok else "unavailable",
     }
 
 
 if __name__ == "__main__":
     if settings.ENVIRONMENT.is_local:
         uvicorn.run(
-            "src.__main__:app",
-            host="0.0.0.0",
-            port=8000,
-            reload=True,
-            workers=1
+            "src.__main__:app", host="0.0.0.0", port=8000, reload=True, workers=1
         )
